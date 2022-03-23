@@ -24,7 +24,7 @@ class NetworkModule {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
-            .client(okHttpClient)
+            //.client(okHttpClient)
             .build()
             .create(ShiftApi::class.java)
 

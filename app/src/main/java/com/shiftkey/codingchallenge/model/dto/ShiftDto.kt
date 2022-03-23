@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Shift(
+data class ShiftDto(
     @Json(name = "shift_id")
     val id: String,
 

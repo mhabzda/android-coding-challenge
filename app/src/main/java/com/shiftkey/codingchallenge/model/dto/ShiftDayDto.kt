@@ -4,7 +4,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Shifts(
-    @Json(name = "data")
-    val data: List<ShiftDay>
+data class ShiftDayDto(
+    @Json(name = "date")
+    val date: String,
+
+    @Json(name = "shifts")
+    val shifts: List<ShiftDto>
 )

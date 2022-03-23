@@ -1,6 +1,7 @@
 package com.shiftkey.codingchallenge.model
 
 import com.shiftkey.codingchallenge.model.entity.ShiftEntity
+import com.shiftkey.codingchallenge.model.mapper.ShiftsMapper
 import com.shiftkey.codingchallenge.model.network.ResponseAdapter
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone

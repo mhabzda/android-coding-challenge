@@ -15,5 +15,14 @@ data class ShiftDto(
     val endTime: String,
 
     @Json(name = "shift_kind")
-    val kind: String
+    val kind: String,
+
+    @Json(name = "facility_type")
+    val facilityType: NameDto,
+
+    @Json(name = "skill")
+    val skill: NameDto,
+
+    @Json(name = "localized_specialty")
+    val specialty: NameDto
 )

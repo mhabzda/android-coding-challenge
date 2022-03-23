@@ -1,4 +1,4 @@
-package com.shiftkey.codingchallenge.model
+package com.shiftkey.codingchallenge.model.mapper
 
 import com.shiftkey.codingchallenge.model.dto.ShiftsDto
 import com.shiftkey.codingchallenge.model.entity.ShiftEntity
@@ -15,7 +15,10 @@ class ShiftsMapper @Inject constructor() {
                     id = it.id,
                     startTime = it.startTime,
                     endTime = it.endTime,
-                    kind = it.kind
+                    kind = it.kind,
+                    facilityType = it.facilityType.name,
+                    skill = it.skill.name,
+                    specialty = it.specialty.name
                 )
             }
 }

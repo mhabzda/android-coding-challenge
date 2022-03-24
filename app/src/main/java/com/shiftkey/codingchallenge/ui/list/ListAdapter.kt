@@ -1,20 +1,14 @@
 package com.shiftkey.codingchallenge.ui.list
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.shiftkey.codingchallenge.databinding.ItemShiftBinding
 import com.shiftkey.codingchallenge.model.entity.ShiftEntity
 
-class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
-
-    var list: List<ShiftEntity> = emptyList()
-        @SuppressLint("NotifyDataSetChanged")
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+class ListAdapter : PagingDataAdapter<ShiftEntity, ListAdapter.ViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemShiftBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -22,17 +16,29 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = list.size
 
     inner class ViewHolder(
         private val binding: ItemShiftBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ShiftEntity) = with(binding) {
-            itemShiftTitle.text = item.specialty
-            itemShiftSubtitle.text = item.startTime
+        fun bind(item: ShiftEntity?) = with(binding) {
+            item?.let {
+                itemShiftTitle.text = item.specialty
+                itemShiftSubtitle.text = item.startTime
+            }
+        }
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ShiftEntity>() {
+            override fun areItemsTheSame(oldItem: ShiftEntity, newItem: ShiftEntity): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: ShiftEntity, newItem: ShiftEntity): Boolean {
+                return oldItem == newItem
+            }
         }
     }
 }

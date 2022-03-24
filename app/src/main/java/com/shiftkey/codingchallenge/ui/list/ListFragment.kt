@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.shiftkey.codingchallenge.databinding.FragmentListBinding
+import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.RefreshItems
+import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.ShowError
 import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,12 +35,21 @@ class ListFragment : DaggerFragment() {
         adapter = ListAdapter()
         binding.listRecycler.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         binding.listRecycler.adapter = adapter
+        binding.listSwipeRefresh.setOnRefreshListener { viewModel.onRefresh() }
 
+        viewModel.pagingEvents.onEach(adapter::submitData).launchIn(viewLifecycleOwner.lifecycleScope)
         viewModel.state.onEach(::renderState).launchIn(viewLifecycleOwner.lifecycleScope)
-        viewModel.onStart()
+        viewModel.sideEffects.onEach(::handleSideEffect).launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.onStart(adapter.loadStateFlow)
     }
 
-    private fun renderState(state: ListViewState) {
-        adapter.list = state.shifts
+    private fun renderState(state: ListViewState) = with(binding) {
+        listSwipeRefresh.isRefreshing = state.isRefreshing
+    }
+
+    private fun handleSideEffect(sideEffect: ListViewSideEffect) = when (sideEffect) {
+        RefreshItems -> adapter.refresh()
+        is ShowError -> Toast.makeText(requireActivity(), sideEffect.message, Toast.LENGTH_LONG).show()
     }
 }

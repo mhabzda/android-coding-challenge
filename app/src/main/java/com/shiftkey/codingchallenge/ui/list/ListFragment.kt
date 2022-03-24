@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -14,8 +17,10 @@ import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.OpenItemScreen
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.RefreshItems
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.ShowError
 import dagger.android.support.DaggerFragment
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ListFragment : DaggerFragment() {
@@ -27,6 +32,12 @@ class ListFragment : DaggerFragment() {
 
     private lateinit var binding: FragmentListBinding
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        adapter = ListAdapter { viewModel.onItemClick(it) }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentListBinding.inflate(inflater, container, false)
         return binding.root
@@ -35,14 +46,13 @@ class ListFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = ListAdapter { viewModel.onItemClick(it) }
         binding.listRecycler.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         binding.listRecycler.adapter = adapter
         binding.listSwipeRefresh.setOnRefreshListener { viewModel.onRefresh() }
 
-        viewModel.pagingEvents.onEach(adapter::submitData).launchIn(viewLifecycleOwner.lifecycleScope)
-        viewModel.state.onEach(::renderState).launchIn(viewLifecycleOwner.lifecycleScope)
-        viewModel.sideEffects.onEach(::handleSideEffect).launchIn(viewLifecycleOwner.lifecycleScope)
+        viewModel.pagingEvents.observeWhenStarted(viewLifecycleOwner, adapter::submitData)
+        viewModel.state.observeWhenStarted(viewLifecycleOwner, ::renderState)
+        viewModel.sideEffects.observeWhenStarted(viewLifecycleOwner, ::handleSideEffect)
 
         viewModel.onStart(adapter.loadStateFlow)
     }
@@ -55,5 +65,12 @@ class ListFragment : DaggerFragment() {
         RefreshItems -> adapter.refresh()
         is OpenItemScreen -> findNavController().navigate(actionToItemFragment(sideEffect.shiftParcelable))
         is ShowError -> Toast.makeText(requireActivity(), sideEffect.message, Toast.LENGTH_LONG).show()
+    }
+
+    private inline fun <reified T> Flow<T>.observeWhenStarted(
+        lifecycleOwner: LifecycleOwner,
+        noinline action: suspend (T) -> Unit
+    ): Job = lifecycleOwner.lifecycleScope.launch {
+        flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED).collectLatest(action)
     }
 }

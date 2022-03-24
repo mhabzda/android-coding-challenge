@@ -53,7 +53,7 @@ class ListViewModel @Inject constructor(
 
     fun onItemClick(item: ShiftEntity) = viewModelScope.launch {
         // I pass the whole parcelable here which is not the best practise.
-        // I'd rather pass only an id and on the next screen fetch shift details but there is no request for that.
+        // I'd rather pass only an id and on the next screen, fetch shift details but there is no request for that.
         sideEffectChannel.send(OpenItemScreen(shiftEntityMapper.map(item)))
     }
 }

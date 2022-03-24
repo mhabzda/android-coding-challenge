@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.shiftkey.codingchallenge.databinding.ItemShiftBinding
 import com.shiftkey.codingchallenge.model.entity.ShiftEntity
 
-class ListAdapter : PagingDataAdapter<ShiftEntity, ListAdapter.ViewHolder>(DIFF_CALLBACK) {
+class ListAdapter(
+    private val clickAction: (ShiftEntity) -> Unit
+) : PagingDataAdapter<ShiftEntity, ListAdapter.ViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemShiftBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -24,6 +26,7 @@ class ListAdapter : PagingDataAdapter<ShiftEntity, ListAdapter.ViewHolder>(DIFF_
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ShiftEntity?) = with(binding) {
             item?.let {
+                root.setOnClickListener { clickAction.invoke(item) }
                 itemShiftTitle.text = item.specialty
                 itemShiftSubtitle.text = item.startTime
             }

@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import com.shiftkey.codingchallenge.model.ShiftRepository
+import com.shiftkey.codingchallenge.model.entity.ShiftEntity
+import com.shiftkey.codingchallenge.ui.item.parcelable.ShiftEntityMapper
+import com.shiftkey.codingchallenge.ui.item.parcelable.ShiftParcelable
+import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.OpenItemScreen
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.RefreshItems
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.ShowError
 import kotlinx.coroutines.channels.Channel
@@ -17,7 +21,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ListViewModel @Inject constructor(
-    shiftRepository: ShiftRepository
+    shiftRepository: ShiftRepository,
+    private val shiftEntityMapper: ShiftEntityMapper
 ) : ViewModel() {
 
     val pagingEvents = shiftRepository.fetchAvailableShifts()
@@ -45,6 +50,12 @@ class ListViewModel @Inject constructor(
     fun onRefresh() = viewModelScope.launch {
         sideEffectChannel.send(RefreshItems)
     }
+
+    fun onItemClick(item: ShiftEntity) = viewModelScope.launch {
+        // I pass the whole parcelable here which is not the best practise.
+        // I'd rather pass only an id and on the next screen fetch shift details but there is no request for that.
+        sideEffectChannel.send(OpenItemScreen(shiftEntityMapper.map(item)))
+    }
 }
 
 data class ListViewState(
@@ -53,5 +64,6 @@ data class ListViewState(
 
 sealed class ListViewSideEffect {
     object RefreshItems : ListViewSideEffect()
+    data class OpenItemScreen(val shiftParcelable: ShiftParcelable) : ListViewSideEffect()
     data class ShowError(val message: String) : ListViewSideEffect()
 }

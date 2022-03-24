@@ -9,6 +9,23 @@
         android:id="@+id/listFragment"
         android:name="com.shiftkey.codingchallenge.ui.list.ListFragment"
         android:label="List fragment"
-        tools:layout="@layout/fragment_list" />
+        tools:layout="@layout/fragment_list">
+
+        <action
+            android:id="@+id/action_to_item_fragment"
+            app:destination="@id/itemFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/itemFragment"
+        android:name="com.shiftkey.codingchallenge.ui.item.ItemFragment"
+        android:label="Item fragment"
+        tools:layout="@layout/fragment_item">
+
+        <argument
+            android:name="shift"
+            app:argType="com.shiftkey.codingchallenge.ui.item.parcelable.ShiftParcelable" />
+    </fragment>
 
 </navigation>

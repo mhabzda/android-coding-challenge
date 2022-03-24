@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.shiftkey.codingchallenge.databinding.FragmentListBinding
+import com.shiftkey.codingchallenge.ui.list.ListFragmentDirections.Companion.actionToItemFragment
+import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.OpenItemScreen
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.RefreshItems
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.ShowError
 import dagger.android.support.DaggerFragment
@@ -32,7 +35,7 @@ class ListFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = ListAdapter()
+        adapter = ListAdapter { viewModel.onItemClick(it) }
         binding.listRecycler.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         binding.listRecycler.adapter = adapter
         binding.listSwipeRefresh.setOnRefreshListener { viewModel.onRefresh() }
@@ -50,6 +53,7 @@ class ListFragment : DaggerFragment() {
 
     private fun handleSideEffect(sideEffect: ListViewSideEffect) = when (sideEffect) {
         RefreshItems -> adapter.refresh()
+        is OpenItemScreen -> findNavController().navigate(actionToItemFragment(sideEffect.shiftParcelable))
         is ShowError -> Toast.makeText(requireActivity(), sideEffect.message, Toast.LENGTH_LONG).show()
     }
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.shiftkey.codingchallenge.ui.item.ItemView
+        android:id="@+id/view_start_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:label="Start time" />
+
+    <com.shiftkey.codingchallenge.ui.item.ItemView
+        android:id="@+id/view_end_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:label="End time" />
+
+    <com.shiftkey.codingchallenge.ui.item.ItemView
+        android:id="@+id/view_kind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:label="Kind" />
+
+    <com.shiftkey.codingchallenge.ui.item.ItemView
+        android:id="@+id/view_facility_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:label="Facility type" />
+
+    <com.shiftkey.codingchallenge.ui.item.ItemView
+        android:id="@+id/view_skill"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:label="Skill" />
+
+    <com.shiftkey.codingchallenge.ui.item.ItemView
+        android:id="@+id/view_speciality"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:label="Speciality" />
+
+</LinearLayout>

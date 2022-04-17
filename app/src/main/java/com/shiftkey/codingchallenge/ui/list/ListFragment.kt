@@ -34,7 +34,6 @@ class ListFragment : DaggerFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         adapter = ListAdapter { viewModel.onItemClick(it) }
     }
 
@@ -51,10 +50,10 @@ class ListFragment : DaggerFragment() {
         binding.listSwipeRefresh.setOnRefreshListener { viewModel.onRefresh() }
 
         viewModel.pagingEvents.observeWhenStarted(viewLifecycleOwner, adapter::submitData)
+        adapter.loadStateFlow.observeWhenStarted(viewLifecycleOwner, viewModel::onLoadStateChange)
+
         viewModel.state.observeWhenStarted(viewLifecycleOwner, ::renderState)
         viewModel.sideEffects.observeWhenStarted(viewLifecycleOwner, ::handleSideEffect)
-
-        viewModel.onStart(adapter.loadStateFlow)
     }
 
     private fun renderState(state: ListViewState) = with(binding) {

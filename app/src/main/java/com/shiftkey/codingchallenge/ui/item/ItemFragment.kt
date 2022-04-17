@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.shiftkey.codingchallenge.databinding.FragmentItemBinding
 
@@ -23,6 +24,7 @@ class ItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
+            itemToolbar.setNavigationOnClickListener { findNavController().navigateUp() }
             viewStartTime.setTitle(args.shift.startTime)
             viewEndTime.setTitle(args.shift.endTime)
             viewKind.setTitle(args.shift.kind)

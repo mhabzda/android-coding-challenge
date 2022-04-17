@@ -12,10 +12,8 @@ import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.OpenItemScreen
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.RefreshItems
 import com.shiftkey.codingchallenge.ui.list.ListViewSideEffect.ShowError
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,11 +31,7 @@ class ListViewModel @Inject constructor(
     private val sideEffectChannel = Channel<ListViewSideEffect>(Channel.BUFFERED)
     val sideEffects = sideEffectChannel.receiveAsFlow()
 
-    fun onStart(loadStateFlow: Flow<CombinedLoadStates>) = viewModelScope.launch {
-        loadStateFlow.collectLatest(::handleLoadState)
-    }
-
-    private suspend fun handleLoadState(state: CombinedLoadStates) {
+    fun onLoadStateChange(state: CombinedLoadStates) = viewModelScope.launch {
         stateFlow.value = stateFlow.value
             .copy(isRefreshing = state.refresh is LoadState.Loading || state.append is LoadState.Loading)
 
